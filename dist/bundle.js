@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -46349,26 +46349,56 @@ function LensFlare() {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main__ = __webpack_require__(2);
+module.exports = function(originalModule) {
+	if(!originalModule.webpackPolyfill) {
+		var module = Object.create(originalModule);
+		// module.parent = undefined by default
+		if(!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		Object.defineProperty(module, "exports", {
+			enumerable: true,
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
 
-document.addEventListener('DOMContentLoaded', new __WEBPACK_IMPORTED_MODULE_0__main__["a" /* default */]());
 
 /***/ }),
 /* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__models_wheel__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__models_tie__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__models_ThreeJSEnterprise__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_three_trackballcontrols__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_three_trackballcontrols___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_three_trackballcontrols__);
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main__ = __webpack_require__(3);
 
+
+document.addEventListener('DOMContentLoaded', new __WEBPACK_IMPORTED_MODULE_0__main__["a" /* default */]());
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__models_tie__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__models_ThreeJSEnterprise__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__models_UniCycle__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_three_trackballcontrols__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_three_trackballcontrols___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_three_trackballcontrols__);
 
 
 
@@ -46379,92 +46409,100 @@ document.addEventListener('DOMContentLoaded', new __WEBPACK_IMPORTED_MODULE_0__m
 
 
 class App {
-  constructor() {
-    const c = document.getElementById('mycanvas');
-    // Enable antialias for smoother lines
-    this.renderer = new __WEBPACK_IMPORTED_MODULE_0_three__["WebGLRenderer"]({ canvas: c, antialias: true });
-    this.scene = new __WEBPACK_IMPORTED_MODULE_0_three__["Scene"]();
-    this.camera = new __WEBPACK_IMPORTED_MODULE_0_three__["PerspectiveCamera"](75, 4 / 3, 0.5, 500);
-    this.camera.position.z = 100;
+    constructor() {
+        const c = document.getElementById('mycanvas');
+        window.addEventListener('keydown', this.onKeypress.bind(this), false);
+        // Enable antialias for smoother lines
+        this.renderer = new __WEBPACK_IMPORTED_MODULE_0_three__["WebGLRenderer"]({ canvas: c, antialias: true });
+        this.scene = new __WEBPACK_IMPORTED_MODULE_0_three__["Scene"]();
+        this.camera = new __WEBPACK_IMPORTED_MODULE_0_three__["PerspectiveCamera"](75, 4 / 3, 0.5, 500);
+        this.camera.position.z = 100;
 
-    const lightOne = new __WEBPACK_IMPORTED_MODULE_0_three__["DirectionalLight"](0xFFFFFF, 1.0);
-    lightOne.position.set(10, 40, 100);
-    this.scene.add(lightOne);
-    // const orbiter = new OrbitControls(this.camera);
-    // orbiter.enableZoom = false;
-    // orbiter.update();
-    this.tracker = new __WEBPACK_IMPORTED_MODULE_4_three_trackballcontrols___default.a(this.camera);
-    this.tracker.rotateSpeed = 2.0;
-    this.tracker.noZoom = false;
-    this.tracker.noPan = false;
+        const lightOne = new __WEBPACK_IMPORTED_MODULE_0_three__["DirectionalLight"](0xFFFFFF, 1.0);
+        lightOne.position.set(10, 40, 100);
+        this.scene.add(lightOne);
+        // const orbiter = new OrbitControls(this.camera);
+        // orbiter.enableZoom = false;
+        // orbiter.update();
+        this.tracker = new __WEBPACK_IMPORTED_MODULE_4_three_trackballcontrols___default.a(this.camera);
+        this.tracker.rotateSpeed = 2.0;
+        this.tracker.noZoom = false;
+        this.tracker.noPan = false;
 
-    this.myTie = new __WEBPACK_IMPORTED_MODULE_2__models_tie__["a" /* default */]();
-    this.myEnterpise = new __WEBPACK_IMPORTED_MODULE_3__models_ThreeJSEnterprise__["a" /* default */]();
-    this.scene.add(this.myTie);
-    this.scene.add(this.myEnterpise);
+        this.myTie = new __WEBPACK_IMPORTED_MODULE_1__models_tie__["a" /* default */]();
+        this.myEnterpise = new __WEBPACK_IMPORTED_MODULE_2__models_ThreeJSEnterprise__["a" /* default */]();
+        this.uni = new __WEBPACK_IMPORTED_MODULE_3__models_UniCycle__["default"]();
+        this.scene.add(this.myTie);
+        this.scene.add(this.myEnterpise);
+        this.scene.add(this.uni);
 
-    window.addEventListener('resize', () => this.resizeHandler());
-    this.resizeHandler();
-    requestAnimationFrame(() => this.render());
-  }
-
-  render() {
-    this.renderer.render(this.scene, this.camera);
-    this.tracker.update();
-    requestAnimationFrame(() => this.render());
-  }
-
-  resizeHandler() {
-    const canvas = document.getElementById("mycanvas");
-    let w = window.innerWidth - 16;
-    let h = 0.75 * w; /* maintain 4:3 ratio */
-    if (canvas.offsetTop + h > window.innerHeight) {
-      h = window.innerHeight - canvas.offsetTop - 16;
-      w = 4 / 3 * h;
+        window.addEventListener('resize', () => this.resizeHandler());
+        this.resizeHandler();
+        requestAnimationFrame(() => this.render());
     }
-    canvas.width = w;
-    canvas.height = h;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(w, h);
-    this.tracker.handleResize();
-  }
+
+    render() {
+
+        this.renderer.render(this.scene, this.camera);
+        this.tracker.update();
+        requestAnimationFrame(() => this.render());
+    }
+
+    resizeHandler() {
+        const canvas = document.getElementById("mycanvas");
+        let w = window.innerWidth - 16;
+        let h = 0.75 * w; /* maintain 4:3 ratio */
+        if (canvas.offsetTop + h > window.innerHeight) {
+            h = window.innerHeight - canvas.offsetTop - 16;
+            w = 4 / 3 * h;
+        }
+        canvas.width = w;
+        canvas.height = h;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(w, h);
+        this.tracker.handleResize();
+    }
+    onKeypress(event) {
+        const key = event.keyCode || event.charCode;
+        switch (key) {
+            case 65:
+                // 'a'
+                //this.camera.matrixWorld.multiply(this.camRotateYPos);
+                break;
+            case 87:
+                // 'w'
+                console.log("Thisis happening");
+                this.myTie.move(20);
+                //this.camera.matrixWorld.multiply(this.camForward);
+                break;
+            case 68:
+                // 'd'
+                //this.camera.matrixWorld.multiply(this.camRotateYNeg);
+                break;
+            case 83:
+                // 's'
+                //this.camera.matrixWorld.multiply(this.camBackward);
+                break;
+            case 73:
+                // 'i': move bike forward
+                this.uni.move(20);
+                break;
+            case 75:
+                // 'k': move bike backward
+                this.uni.move(-20);
+                break;
+            case 74:
+                // 'j': turn bike left
+                this.uni.turn(10);
+                break;
+            case 76:
+                // 'l': turn bike right
+                this.uni.turn(-10);
+                break;
+        }
+    }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = App;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
-
-
-class Wheel {
-    constructor(numSpokes) {
-        // number of spokes on the wheel
-        const WHEEL_RADIUS = 200;
-        const TIRE_THICKNESS = 20;
-        const tubeGeo = new __WEBPACK_IMPORTED_MODULE_0_three__["TorusGeometry"](WHEEL_RADIUS, TIRE_THICKNESS, 6, 30);
-        const tubeMat = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshBasicMaterial"]({ color: 0x82332a });
-        const tube = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](tubeGeo, tubeMat);
-
-        const wheelGroup = new __WEBPACK_IMPORTED_MODULE_0_three__["Group"]();
-        wheelGroup.add(tube); // place the torus in the group
-
-        for (let k = 0; k < numSpokes; k++) {
-            const spGeo = new __WEBPACK_IMPORTED_MODULE_0_three__["CylinderGeometry"](0.7 * TIRE_THICKNESS, 0.7 * TIRE_THICKNESS, WHEEL_RADIUS, 10, 10);
-            const spMat = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshBasicMaterial"]({ color: 0x001199 });
-            const sp = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](spGeo, spMat);
-            sp.rotateZ(k * 2 * Math.PI / numSpokes);
-            sp.translateY(WHEEL_RADIUS / 2);
-            wheelGroup.add(sp); // place the cylinder in the group
-        }
-
-        return wheelGroup; // the constructor must return the entire group
-    }
-}
-/* unused harmony export default */
 
 
 /***/ }),
@@ -46475,9 +46513,10 @@ class Wheel {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
 
 //Created By Phil Garza
-class tie {
+class tie extends __WEBPACK_IMPORTED_MODULE_0_three__["Group"] {
     constructor() {
         // number of spokes on the wheel
+        super();
         // Colors for Tie
         const shipColor = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]({ color: 0xAAB7B8 });
         const shipMid = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]({ color: 0x99A3A4 });
@@ -46514,7 +46553,17 @@ class tie {
 
         //Scale it so i can see it ;)
         tieGroup.scale.set(10, 10, 10);
-        return tieGroup; // the constructor must return the entire group
+        this.add(tieGroup);
+        //return tieGroup;   // the constructor must return the entire group
+    }
+
+    move(distance) {
+        var m = new __WEBPACK_IMPORTED_MODULE_0_three__["Matrix4"]();
+        var translate = m.makeTranslation(0, 0, distance);
+        this.this.tieGroup.matrix.multiply(translate);
+        var wheelRot = distance / 150;
+        var rotation = m.makeRotationZ(wheelRot);
+        this.matrix.multiply(rotation);
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = tie;
@@ -46663,6 +46712,123 @@ class ThreeJSEnterprise {
 
 /***/ }),
 /* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__frame__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__wheel__ = __webpack_require__(8);
+
+
+
+
+class UniCycle extends __WEBPACK_IMPORTED_MODULE_0_three__["Group"] {
+    constructor() {
+        super();
+        this.frame = new __WEBPACK_IMPORTED_MODULE_1__frame__["default"]();
+        this.wheel = new __WEBPACK_IMPORTED_MODULE_2__wheel__["a" /* default */](6);
+        this.add(this.frame);
+        this.frame.add(this.wheel);
+        const rotX = new __WEBPACK_IMPORTED_MODULE_0_three__["Matrix4"].makeRotationX(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
+        const rotY = new __WEBPACK_IMPORTED_MODULE_0_three__["Matrix4"].makeRotationY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(90));
+        const trans = new __WEBPACK_IMPORTED_MODULE_0_three__["Matrix4"].makeTranslation(0, 158, 0);
+        this.frame.matrixAutoUpdate = false;
+        this.frame.matrix.multiply(rotX);
+        this.frame.matrix.multiply(trans);
+
+        this.wheel.matrixAutoUpdate = false;
+        this.wheel.matrix.multiply(rotY);
+    }
+
+    move(distance) {
+        const trans = new __WEBPACK_IMPORTED_MODULE_0_three__["Matrix4"].makeTranslation(0, 0, distance);
+        this.frame.matrix.multiply(trans);
+        const wheelRot = distance / 150;
+        const rotation = new __WEBPACK_IMPORTED_MODULE_0_three__["Matrix4"].makeRotationZ(wheelRot);
+        this.wheel.matrix.multiply(rotation);
+    }
+
+    turn(angle) {
+        const rot = new __WEBPACK_IMPORTED_MODULE_0_three__["Matrix4"].makeRotationY(__WEBPACK_IMPORTED_MODULE_0_three__["Math"].degToRad(angle));
+        this.frame.matrix.multiply(rot);
+    }
+}
+module.exports = UniCycle;
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)(module)))
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
+
+
+class BikeFrame extends __WEBPACK_IMPORTED_MODULE_0_three__["Group"] {
+    constructor() {
+        super();
+        const FORK_LENGTH = 240;
+        const FORK_SEPARATION = 60;
+        var forkGeo = new __WEBPACK_IMPORTED_MODULE_0_three__["CylinderGeometry"](12, 12, FORK_LENGTH, 10);
+        var forkMat = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]({ color: 0xFFFF03 });
+        var leftFork = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](forkGeo, forkMat);
+        var rightFork = leftFork.clone();
+        var handleGeo = new __WEBPACK_IMPORTED_MODULE_0_three__["CylinderGeometry"](20, 20, 3 * FORK_SEPARATION, 10);
+        var handleMat = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshPhongMaterial"]({ color: 0x00CC00 });
+        var handle = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](handleGeo, handleMat);
+        this.add(leftFork);
+        this.add(rightFork);
+        this.add(handle);
+        leftFork.translateX(-FORK_SEPARATION / 2);
+        leftFork.translateY(FORK_LENGTH / 2);
+        rightFork.translateX(+FORK_SEPARATION / 2);
+        rightFork.translateY(FORK_LENGTH / 2);
+
+        handle.rotateZ(Math.PI / 2);
+        handle.translateX(FORK_LENGTH);
+    }
+}
+
+module.exports = BikeFrame;
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)(module)))
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_three__ = __webpack_require__(0);
+
+
+class Wheel {
+    constructor(numSpokes) {
+        // number of spokes on the wheel
+        const WHEEL_RADIUS = 200;
+        const TIRE_THICKNESS = 20;
+        const tubeGeo = new __WEBPACK_IMPORTED_MODULE_0_three__["TorusGeometry"](WHEEL_RADIUS, TIRE_THICKNESS, 6, 30);
+        const tubeMat = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshBasicMaterial"]({ color: 0x82332a });
+        const tube = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](tubeGeo, tubeMat);
+
+        const wheelGroup = new __WEBPACK_IMPORTED_MODULE_0_three__["Group"]();
+        wheelGroup.add(tube); // place the torus in the group
+
+        for (let k = 0; k < numSpokes; k++) {
+            const spGeo = new __WEBPACK_IMPORTED_MODULE_0_three__["CylinderGeometry"](0.7 * TIRE_THICKNESS, 0.7 * TIRE_THICKNESS, WHEEL_RADIUS, 10, 10);
+            const spMat = new __WEBPACK_IMPORTED_MODULE_0_three__["MeshBasicMaterial"]({ color: 0x001199 });
+            const sp = new __WEBPACK_IMPORTED_MODULE_0_three__["Mesh"](spGeo, spMat);
+            sp.rotateZ(k * 2 * Math.PI / numSpokes);
+            sp.translateY(WHEEL_RADIUS / 2);
+            wheelGroup.add(sp); // place the cylinder in the group
+        }
+
+        return wheelGroup; // the constructor must return the entire group
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Wheel;
+
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**

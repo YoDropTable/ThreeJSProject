@@ -1,8 +1,7 @@
 import * as THREE from 'three';
-import wheel from './models/wheel';
 import tie from './models/tie';
 import ThreeJSEnterprise from './models/ThreeJSEnterprise'
-
+import UniCycle from './models/UniCycle'
 // import orbit from 'three-orbit-controls';
 // const OrbitControls = orbit(THREE);
 import TrackballControls from 'three-trackballcontrols';
@@ -11,6 +10,7 @@ import {ShaderLib as myTie} from "three";
 export default class App {
   constructor() {
     const c = document.getElementById('mycanvas');
+      window.addEventListener('keydown', this.onKeypress.bind(this), false);
     // Enable antialias for smoother lines
     this.renderer = new THREE.WebGLRenderer({canvas: c, antialias: true});
     this.scene = new THREE.Scene();
@@ -30,8 +30,12 @@ export default class App {
 
     this.myTie = new tie();
     this.myEnterpise = new ThreeJSEnterprise();
+    this.uni = new UniCycle();
+    //this.uni.scale.set(new THREE.Vector3());
     this.scene.add(this.myTie);
     this.scene.add(this.myEnterpise);
+    this.scene.add(this.uni);
+
 
     window.addEventListener('resize', () => this.resizeHandler());
     this.resizeHandler();
@@ -39,9 +43,11 @@ export default class App {
   }
 
   render() {
+
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
     requestAnimationFrame(() => this.render());
+
   }
 
   resizeHandler() {
@@ -58,4 +64,43 @@ export default class App {
     this.renderer.setSize(w, h);
     this.tracker.handleResize();
   }
+    onKeypress(event) {
+        const key = event.keyCode || event.charCode;
+        switch (key) {
+            case 65:
+                // 'a'
+                //this.camera.matrixWorld.multiply(this.camRotateYPos);
+                break;
+            case 87:
+                // 'w'
+                console.log("Thisis happening");
+                this.myTie.move(20);
+                //this.camera.matrixWorld.multiply(this.camForward);
+                break;
+            case 68:
+                // 'd'
+                //this.camera.matrixWorld.multiply(this.camRotateYNeg);
+                break;
+            case 83:
+                // 's'
+                //this.camera.matrixWorld.multiply(this.camBackward);
+                break;
+            case 73:
+                // 'i': move bike forward
+                this.uni.move(20);
+                break;
+            case 75:
+                // 'k': move bike backward
+                this.uni.move(-20);
+                break;
+            case 74:
+                // 'j': turn bike left
+                this.uni.turn(10);
+                break;
+            case 76:
+                // 'l': turn bike right
+                this.uni.turn(-10);
+                break;
+        }
+    }
 }

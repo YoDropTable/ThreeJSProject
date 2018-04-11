@@ -1,7 +1,8 @@
-import {Math, CylinderGeometry, Group, Mesh, MeshPhongMaterial, SphereGeometry} from "three";
+import {Math, CylinderGeometry, Group, Mesh, MeshPhongMaterial, SphereGeometry, Matrix4} from "three";
 //Created By Phil Garza
-export default class tie {
+export default class tie extends Group {
     constructor () { // number of spokes on the wheel
+        super()
     // Colors for Tie
         const shipColor = new MeshPhongMaterial ({color: 0xAAB7B8});
         const shipMid = new MeshPhongMaterial ({color: 0x99A3A4});
@@ -38,6 +39,16 @@ export default class tie {
 
         //Scale it so i can see it ;)
         tieGroup.scale.set(10,10,10);
-        return tieGroup;   // the constructor must return the entire group
+        this.add(tieGroup);
+        //return tieGroup;   // the constructor must return the entire group
+    }
+
+    move(distance){
+        var m = new Matrix4();
+        var translate = m.makeTranslation(0,0,distance);
+        this.tieGroup.matrix.multiply(translate);
+        var wheelRot = distance/ 150;
+        var rotation = m.makeRotationZ(wheelRot);
+        this.matrix.multiply(rotation);
     }
 }
