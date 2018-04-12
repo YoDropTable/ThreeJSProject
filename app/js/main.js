@@ -9,7 +9,10 @@ import TrackballControls from 'three-trackballcontrols';
 import {ShaderLib as myTie} from "three";
 import Wall from "./models/wall";
 import Room from "./models/Room";
-
+const rotationSpeed = 20;
+const swayDistance = 1;
+var bladeRotation = rotationSpeed;
+var copterSway = swayDistance;
 export default class App {
   constructor() {
     const c = document.getElementById('mycanvas');
@@ -51,7 +54,7 @@ export default class App {
   }
 
   render() {
-    this.copter.animate();
+    this.copter.animate(bladeRotation, copterSway);
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
     requestAnimationFrame(() => this.render());
@@ -74,40 +77,82 @@ export default class App {
   }
     onKeypress(event) {
         const key = event.keyCode || event.charCode;
+
         switch (key) {
             case 65:
                 // 'a'
                 //this.camera.matrixWorld.multiply(this.camRotateYPos);
+                //strafe left
+                this.copter.strafe(10);
                 break;
             case 87:
                 // 'w'
                 console.log("Thisis happening");
-                this.myTie.move(20);
+                //move forward
+                this.copter.move(-10);
                 //this.camera.matrixWorld.multiply(this.camForward);
                 break;
             case 68:
                 // 'd'
+                //strafe right
+                this.copter.strafe(-10);
                 //this.camera.matrixWorld.multiply(this.camRotateYNeg);
                 break;
             case 83:
                 // 's'
+                //move backward
+                this.copter.move(10);
                 //this.camera.matrixWorld.multiply(this.camBackward);
                 break;
-            case 73:
-                // 'i': move bike forward
-                this.uni.move(20);
+            case 38:
+                // 'up arrow'
+                //pitch up
+                this.copter.pitch(-10);
+
                 break;
-            case 75:
-                // 'k': move bike backward
-                this.uni.move(-20);
+            case 40:
+                // down arrow - pitch down
+                this.copter.pitch(10);
                 break;
-            case 74:
-                // 'j': turn bike left
-                this.uni.turn(10);
+            case 37:
+                // left arrow- roll left
+                this.copter.roll(10);
                 break;
-            case 76:
-                // 'l': turn bike right
-                this.uni.turn(-10);
+            case 39:
+                // right arrow- roll right
+                this.copter.roll(-10);
+                break;
+            case 81:
+                // 'q' climb down
+                this.copter.climb(-10);
+                break;
+            case 69:
+                // 'e' climb up
+                this.copter.climb(10);
+                break;
+            case 49:
+                // '1' turn left
+                this.copter.turn(10);
+                break;
+            case 50:
+                // '2' turn right
+                this.copter.turn(-10);
+                break;
+            case 51:
+                // '3'- stop blades rotation
+                bladeRotation = 0;
+                break;
+            case 52:
+                // '4'- start rotation
+                bladeRotation = rotationSpeed;
+                break;
+            case 53:
+                // '5' - stop sway
+                copterSway = 0;
+                break;
+            case 54:
+                // '6'- start sway
+                copterSway = swayDistance;
                 break;
         }
     }

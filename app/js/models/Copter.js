@@ -3,6 +3,7 @@ import Blades from './blades';
 import * as THREE from "three";
 
 class Copter extends Group {
+
     constructor() {
         super();
         this.castShadow = true;
@@ -108,8 +109,8 @@ class Copter extends Group {
         this.scale.set(.3,.3,.3);
     }
 
-    animate() {
-        let rotation = new THREE.Matrix4().makeRotationZ(Math.degToRad(20));
+    animate(rot, trans) {
+        let rotation = new THREE.Matrix4().makeRotationZ(Math.degToRad(rot));
         this.blades.matrix.multiply(rotation);
         this.bladesBack.matrix.multiply(rotation);
         if(this.swayLeft){
@@ -121,7 +122,7 @@ class Copter extends Group {
                 //this.body.matrix.multiply(rotTurn)
                 //this.body.matrixWorld.multiply(rotTurnWOrld);
             }
-            let translate = new THREE.Matrix4().makeTranslation(0,0,1);
+            let translate = new THREE.Matrix4().makeTranslation(0,0,trans);
             //let rotBack = new THREE.Matrix4().makeRotationX(Math.degToRad(-15));
             this.body.matrix.multiply(translate);
         }
@@ -134,7 +135,7 @@ class Copter extends Group {
                 //this.body.matrix.multiply(rotTurn)
                 //this.body.matrixWorld.multiply(rotTurnWOrld);
             }
-            let translate = new THREE.Matrix4().makeTranslation(0,0,-1);
+            let translate = new THREE.Matrix4().makeTranslation(0,0,-trans);
             this.body.matrix.multiply(translate);
 
         }
@@ -142,10 +143,46 @@ class Copter extends Group {
 
     }
 
-    turn(angle) {
-        const rot = new THREE.Matrix4().makeRotationY(Math.degToRad(angle));
-        this.frame.matrix.multiply(rot);
+    // turn(angle) {
+    //     const rot = new THREE.Matrix4().makeTranslation(0,0,-1);
+    //     this.frame.matrix.multiply(rot);
+    // }
+
+    move(x){
+        const move = new THREE.Matrix4().makeTranslation(x,0,0);
+        this.body.matrix.multiply(move);
     }
+
+    strafe(z){
+        const strafe = new THREE.Matrix4().makeTranslation(0,0,z);
+        this.body.matrix.multiply(strafe);
+    }
+
+    climb(y){
+        const climb = new THREE.Matrix4().makeTranslation(0,y,0);
+        this.body.matrix.multiply(climb);
+    }
+
+    turn(angle){
+        const turn = new THREE.Matrix4().makeRotationY(Math.degToRad(angle));
+        this.body.matrix.multiply(turn);
+    }
+
+    roll(angle){
+        const roll = new THREE.Matrix4().makeRotationX(Math.degToRad(angle));
+        this.body.matrix.multiply(roll);
+    }
+
+    pitch(angle){
+        const pitch = new THREE.Matrix4().makeRotationZ(Math.degToRad(angle));
+        this.body.matrix.multiply(pitch);
+    }
+
+    stopAnimation(){
+        tailMesh.matrixAutoUpdate = true;
+    }
+
+
 }
 
 export default Copter;
