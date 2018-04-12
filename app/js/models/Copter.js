@@ -80,6 +80,8 @@ class Copter extends Group {
         tailMesh.matrix.multiply(rot);
         rot = new THREE.Matrix4().makeRotationY(Math.degToRad(270));
         bodyMesh.matrix.multiply(rot);
+        bodyMesh.castShadow = true;
+        tailMesh.castShadow = true;
 
 
         this.body.add(bodyMesh);
@@ -99,13 +101,13 @@ class Copter extends Group {
 
         let transUp = new THREE.Matrix4().makeTranslation(0, 0, -50);
 
-
         this.blades.matrix.multiply(rotX);
         this.blades.matrix.multiply(transUp);
         this.bladesBack.matrix.multiply(trans);
         trans = new THREE.Matrix4().makeTranslation(0,0,-10);
         this.bladesBack.matrix.multiply(trans);
         this.scale.set(.3,.3,.3);
+        this.body.castShadow = true;
     }
 
     animate() {

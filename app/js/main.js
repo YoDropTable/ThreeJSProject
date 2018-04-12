@@ -9,6 +9,10 @@ import TrackballControls from 'three-trackballcontrols';
 import {ShaderLib as myTie} from "three";
 import Wall from "./models/wall";
 import Room from "./models/Room";
+import {MeshPhongMaterial} from "three";
+import {SphereGeometry} from "three";
+import {Mesh} from "three";
+import {MeshStandardMaterial} from "three";
 
 export default class App {
   constructor() {
@@ -26,6 +30,28 @@ export default class App {
     // const orbiter = new OrbitControls(this.camera);
     // orbiter.enableZoom = false;
     // orbiter.update();
+
+    this.ambient = new THREE.AmbientLight(0xff52ef, 0.1);
+    this.scene.add(this.ambient);
+
+    this.spotLight = new THREE.SpotLight(0xf46e42, 1);
+    this.spotLight.position.set(15,40,35);
+    this.spotLight.angle = Math.PI / 4;
+    this.spotLight.penumbra = 0.05;
+    this.spotLight.decay = 2;
+    this.spotLight.distance = 300;
+
+     const Sphere = new SphereGeometry(50, 20, 20);
+     const SphereColor = new MeshStandardMaterial ({color: 0xBBBBBB});
+     this.sphereMesh = new Mesh(Sphere, SphereColor);
+     this.sphereMesh.receiveShadow = true;
+     this.sphereMesh.matrixAutoUpdate = false;
+     this.sphereMesh.matrix.multiply(new THREE.Matrix4().makeTranslation(0,-100,0));
+
+    this.scene.add(this.sphereMesh);
+
+    this.scene.add(this.spotLight);
+
     this.tracker = new TrackballControls(this.camera);
     this.tracker.rotateSpeed = 2.0;
     this.tracker.noZoom = false;
@@ -34,14 +60,14 @@ export default class App {
     this.wall = new Room();
     this.scene.add(this.wall);
     this.copter = new Copter();
-    this.copter.body.matrix.multiply(new THREE.Matrix4().makeTranslation(300,0,0));
+    //this.copter.body.matrix.multiply(new THREE.Matrix4().makeTranslation(300,0,0));
     this.scene.add(this.copter);
     //this.myTie = new tie();
     this.myEnterpise = new ThreeJSEnterprise();
     //this.uni = new UniCycle();
     //this.uni.scale.set(new THREE.Vector3());
     //this.scene.add(this.myTie);
-    this.scene.add(this.myEnterpise);
+    //this.scene.add(this.myEnterpise);
     //this.scene.add(this.uni);
 
 

@@ -8,7 +8,7 @@ export default class Wall {
             new THREE.PlaneGeometry(500,500,10,10),
             new THREE.MeshBasicMaterial({map:texture}));
         wallMesh.matrixAutoUpdate = false;
-
+        wallMesh.receiveShadow = true;
 
         return wallMesh;   // the constructor must return the entire group
     }

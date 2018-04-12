@@ -31,6 +31,7 @@ class Room extends Group {
         floor.matrix.multiply(tranlation);
         floor.matrix.multiply(new THREE.Matrix4().makeRotationX(Math.degToRad(90)));
         floor.matrix.multiply(new THREE.Matrix4().makeRotationY(Math.degToRad(180)));
+        floor.receiveShadow = true;
         this.add(floor);
         const skyMesh = new THREE.Mesh(
             new THREE.PlaneGeometry(500,500,10,10),
