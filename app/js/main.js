@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import Copter from './models/Copter'
 import tie from './models/tie';
 import ThreeJSEnterprise from './models/ThreeJSEnterprise'
 import UniCycle from './models/UniCycle'
@@ -6,6 +7,8 @@ import UniCycle from './models/UniCycle'
 // const OrbitControls = orbit(THREE);
 import TrackballControls from 'three-trackballcontrols';
 import {ShaderLib as myTie} from "three";
+import Wall from "./models/wall";
+import Room from "./models/Room";
 
 export default class App {
   constructor() {
@@ -27,14 +30,19 @@ export default class App {
     this.tracker.rotateSpeed = 2.0;
     this.tracker.noZoom = false;
     this.tracker.noPan = false;
-
-    this.myTie = new tie();
+    var texture = new THREE.TextureLoader().load('app/js/textures/mario.jpg');
+    this.wall = new Room();
+    this.scene.add(this.wall);
+    this.copter = new Copter();
+    this.copter.body.matrix.multiply(new THREE.Matrix4().makeTranslation(300,0,0));
+    this.scene.add(this.copter);
+    //this.myTie = new tie();
     this.myEnterpise = new ThreeJSEnterprise();
-    this.uni = new UniCycle();
+    //this.uni = new UniCycle();
     //this.uni.scale.set(new THREE.Vector3());
-    this.scene.add(this.myTie);
+    //this.scene.add(this.myTie);
     this.scene.add(this.myEnterpise);
-    this.scene.add(this.uni);
+    //this.scene.add(this.uni);
 
 
     window.addEventListener('resize', () => this.resizeHandler());
@@ -43,7 +51,7 @@ export default class App {
   }
 
   render() {
-
+    this.copter.animate();
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
     requestAnimationFrame(() => this.render());
