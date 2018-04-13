@@ -178,10 +178,6 @@ class Copter extends Group {
         this.body.matrix.multiply(pitch);
     }
 
-    stopAnimation(){
-        tailMesh.matrixAutoUpdate = true;
-    }
-
 
 }
 
