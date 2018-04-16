@@ -9,7 +9,7 @@ import TrackballControls from 'three-trackballcontrols';
 import {ShaderLib as myTie} from "three";
 import Wall from "./models/wall";
 import Room from "./models/Room";
-import {Math} from 'three';
+//import {Math} from 'three';
 import {SphereGeometry} from "three";
 import {MeshStandardMaterial} from "three";
 import {Mesh} from "three";
@@ -18,12 +18,11 @@ var rotationSpeed = 20;
 var swayDistance = 1;
 var bladeRotation = rotationSpeed;
 var copterSway = swayDistance;
+var canvas;
+var w = 3;
+var h = 4;
 
 //select items with mouse vars
-var raycaster;
-var mouse;
-var objects = [];
-var stats;
 ///////////
 const moveCamForward = new THREE.Matrix4().makeTranslation(0,0,-10);
 const moveCamBackward = new THREE.Matrix4().makeTranslation(0,0,10);
@@ -31,12 +30,12 @@ const strafeCamLeft = new THREE.Matrix4().makeTranslation(-10,0,0);
 const strafeCamRight = new THREE.Matrix4().makeTranslation(10,0,0);
 const climbCamDown = new THREE.Matrix4().makeTranslation(0,-10,0);
 const climbCamUp = new THREE.Matrix4().makeTranslation(0,10,0);
-const rotCamLeft = new THREE.Matrix4().makeRotationZ(Math.degToRad(10));
-const rotCamRight = new THREE.Matrix4().makeRotationZ(Math.degToRad(-10));
-const turnCamLeft = new THREE.Matrix4().makeRotationY(Math.degToRad(10));
-const turnCamRight = new THREE.Matrix4().makeRotationY(Math.degToRad(-10));
-const pitchCamUp = new THREE.Matrix4().makeRotationX(Math.degToRad(10));
-const pitchCamDown = new THREE.Matrix4().makeRotationX(Math.degToRad(-10));
+const rotCamLeft = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(10));
+const rotCamRight = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-10));
+const turnCamLeft = new THREE.Matrix4().makeRotationY(THREE.Math.degToRad(10));
+const turnCamRight = new THREE.Matrix4().makeRotationY(THREE.Math.degToRad(-10));
+const pitchCamUp = new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(10));
+const pitchCamDown = new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-10));
 
 export default class App {
   constructor() {
@@ -45,20 +44,20 @@ export default class App {
       window.addEventListener('mousemove', this.onMouseMove.bind(this), false);
     // Enable antialias for smoother lines
     this.renderer = new THREE.WebGLRenderer({canvas: c, antialias: true});
+    this.renderer.shadowMap.enabled = true;
+      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+     // this.renderer.setPixelRatio( window.devicePixelRatio );
+      //container.appendChild(this.renderer.domElement);
+      //renderer.setPixelRatio( window.devicePixelRatio );
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, 4/3, 0.5, 500);
+
+    this.camera = new THREE.PerspectiveCamera(75, 4/3, 1, 500);
+
+    //this.camera.aspect = 4/3;
     this.camera.position.z = 100;
 
-      raycaster = new THREE.Raycaster();
-      mouse = new THREE.Vector2();
-
-      // renderer = new THREE.CanvasRenderer();
-      // renderer.setPixelRatio( window.devicePixelRatio );
-      // renderer.setSize( window.innerWidth, window.innerHeight );
-      // container.appendChild( renderer.domElement );
-
-      //stats = new Stats();
-      //container.appendChild( stats.dom );
+      this.raycaster = new THREE.Raycaster();
+      this.mouse = new THREE.Vector2();
 
       window.addEventListener( 'mousedown', this.onDocumentMouseDown.bind(this), false );
       window.addEventListener( 'touchstart', this.onDocumentTouchStart.bind(this), false );
@@ -70,20 +69,29 @@ export default class App {
       this.ambient = new THREE.AmbientLight(0xff52ef, 0.1);
       this.scene.add(this.ambient);
       this.spotLight = new THREE.SpotLight(0xfFFFFF, 1);
-      this.spotLight.position.set(15,40,35);
-      this.spotLight.angle = Math.PI / 4;
+      //var spotLightHelper = new THREE.SpotLightHelper( this.spotLight );
+
+      this.spotLight.position.set(-40,80,40);
+      this.spotLight.angle = Math.PI / 8;
       this.spotLight.penumbra = 0.4;
-      this.spotLight.decay = 2;
-      this.spotLight.distance = 300;
+      this.spotLight.decay = .5;
+      this.spotLight.distance = 500;
+      this.spotLight.castShadow = true;
+      //this.scene.add(this.spotLight.target);
 
       const Sphere = new SphereGeometry(50, 20, 20);
       const SphereColor = new MeshStandardMaterial ({color: 0xBBBBBB});
       this.sphereMesh = new Mesh(Sphere, SphereColor);
+
       this.sphereMesh.receiveShadow = true;
       this.sphereMesh.matrixAutoUpdate = false;
       this.sphereMesh.matrix.multiply(new THREE.Matrix4().makeTranslation(0,-100,20));
         this.scene.add(this.sphereMesh);
         this.scene.add(this.spotLight);
+
+        //this.scene.add(this.spotLight.target);
+        //this.spotLight.target = this.myEnterpise;
+      // this.scene.add( spotLightHelper );
       // const orbiter = new OrbitControls(this.camera);
     // orbiter.enableZoom = false;
     // orbiter.update();
@@ -93,12 +101,23 @@ export default class App {
     // this.tracker.noPan = false;
     var texture = new THREE.TextureLoader().load('app/js/textures/mario.jpg');
     this.wall = new Room();
+    this.wall.receiveShadow = true;
     this.scene.add(this.wall);
     this.copter = new Copter();
-    this.copter.body.matrix.multiply(new THREE.Matrix4().makeTranslation(300,0,0));
+    this.copter.name = 'copter';
+    this.copter.castShadow = true;
     this.scene.add(this.copter);
+    //this.scene.add(this.copter);
+    this.copter.body.matrix.multiply(new THREE.Matrix4().makeTranslation(300,0,0));
+
+
+
+
     //this.myTie = new tie();
     this.myEnterpise = new ThreeJSEnterprise();
+    this.myEnterpise.castShadow = true;
+
+
     //this.uni = new UniCycle();
     //this.uni.scale.set(new THREE.Vector3());
     //this.scene.add(this.myTie);
@@ -116,37 +135,18 @@ export default class App {
   }
 
   render() {
-    this.copter.animate(bladeRotation, copterSway);
-
-      raycaster.setFromCamera( mouse, this.camera );
-      // calculate objects intersecting the picking ray
-      var intersects = raycaster.intersectObjects( this.scene.children );
-        if(intersects.length > 0){
-            console.log(intersects);
-            intersects = null;
-        }
-
-      for ( var i = 0; i < intersects.length; i++ ) {
-
-          intersects[ i ].object.material.color.set( 0xff0000 );
-
-      }
-
-
+      this.raycaster.setFromCamera( this.mouse, this.camera );
     this.renderer.render(this.scene, this.camera);
-    //this.camera.lookAt( this.scene.position );
-    //this.tracker.update();
-
-
+      this.copter.animate(bladeRotation, copterSway);
 
     requestAnimationFrame(() => this.render());
 
   }
 
   resizeHandler() {
-    const canvas = document.getElementById("mycanvas");
-    let w = window.innerWidth - 16;
-    let h = 0.75 * w;  /* maintain 4:3 ratio */
+    canvas = document.getElementById("mycanvas");
+    w = window.innerWidth - 16;
+    h = 0.75 * w;  /* maintain 4:3 ratio */
     if (canvas.offsetTop + h > window.innerHeight) {
       h = window.innerHeight - canvas.offsetTop - 16;
       w = 4/3 * h;
@@ -154,7 +154,8 @@ export default class App {
     canvas.width = w;
     canvas.height = h;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(w, h, false);
+    this.renderer.setSize(w, h);
+
    // this.tracker.handleResize();
   }
     onKeypress(event) {
@@ -265,7 +266,7 @@ this.strafeRight(selected);
           this.copter.move(-10);
 
       } else if(selected == this.myEnterpise){
-
+          this.myEnterpise.move(-10);
       } else if(selected == this.sphereMesh){
 
       } else { //move camera
@@ -277,7 +278,7 @@ this.strafeRight(selected);
         if(selected == this.copter){
             this.copter.move(10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.move(10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -292,7 +293,7 @@ this.strafeRight(selected);
         if(selected == this.copter){
             this.copter.strafe(10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.strafe(10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -304,7 +305,7 @@ this.strafeRight(selected);
         if(selected == this.copter){
             this.copter.strafe(-10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.strafe(-10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -319,7 +320,7 @@ this.strafeRight(selected);
 
             this.copter.climb(10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.climb(-10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -334,7 +335,7 @@ this.strafeRight(selected);
 
             this.copter.climb(-10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.climb(10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -347,7 +348,7 @@ this.strafeRight(selected);
 
             this.copter.roll(10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.roll(10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -360,7 +361,7 @@ this.strafeRight(selected);
         if(selected == this.copter){
             this.copter.roll(-10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.roll(-10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -372,7 +373,7 @@ this.strafeRight(selected);
         if(selected == this.copter){
             this.copter.turn(10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.turn(-10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -385,7 +386,7 @@ this.strafeRight(selected);
 
             this.copter.turn(-10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.turn(10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -399,7 +400,7 @@ this.strafeRight(selected);
             this.copter.pitch(-10);
 
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.pitch(-10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -412,7 +413,7 @@ this.strafeRight(selected);
         if(selected == this.copter){
             this.copter.pitch(10);
         } else if(selected == this.myEnterpise){
-
+            this.myEnterpise.pitch(10);
         } else if(selected == this.sphereMesh){
 
         } else { //move camera
@@ -432,52 +433,69 @@ this.strafeRight(selected);
 
     }
 
-    onDocumentMouseDown( event ) {
-      console.log("in mouse down");
+    onDocumentMouseDown(e) {
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+        var intersects = this.raycaster.intersectObjects(this.scene.children, true);
+         for ( var i = 0; i < intersects.length; i++ ) {
+             console.log(intersects[i]);
+             //console.log(intersects[i].object.parent.parent);
+             if(intersects[i].object.parent === this.copter || intersects[i].object.parent.parent === this.copter){
+                 selected = this.copter;
+                 i = intersects.length
+             }else if(intersects[i].object.parent === this.myEnterpise || intersects[i].object.parent.parent.parent === this.myEnterpise){
+                 selected = this.myEnterpise;
+                 i = intersects.length
+             }else if(intersects[i].object === this.sphereMesh) {
+                 selected = this.sphereMesh;
+                 i = intersects.length
+             } else {
+                 selected = this.camera;
+                 i = intersects.length
+             }
 
-        // event.preventDefault();
-        //
-        // mouse.x = ( event.clientX / this.renderer.domElement.clientWidth ) * 2 - 1;
-        // mouse.y = - ( event.clientY / this.renderer.domElement.clientHeight ) * 2 + 1;
-        // console.log(mouse.x);
-        // console.log(mouse.y);
-        // raycaster.setFromCamera( mouse, this.camera );
-        // console.log(raycaster);
-        //
-        // var intersects = raycaster.intersectObjects( this.scene.children );
-        //
-        // if ( intersects.length > 0 ) {
-        //     console.log("clicked");
-        //     console.log(mouse.x);
-        //     console.log(mouse.y);
-        //
-        //     intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
-        //
-        //     //var particle = new THREE.Sprite( particleMaterial );
-        //     //particle.position.copy( intersects[ 0 ].point );
-        //     //particle.scale.x = particle.scale.y = 16;
-        //     //this.scene.add( particle );
-        //
-        // }
+         //     var objectGroup = intersects[i].parent;
+         //
+         //     for(var j = 0; j < objectGroup.children.length; j++){
+         //         objectGroup.children[j].material.color.setHex(0x1A75FF);
+         //
+             }
 
-        /*
-        // Parse all the faces
-        for ( var i in intersects ) {
-
-            intersects[ i ].face.material[ 0 ].color.setHex( Math.random() * 0xffffff | 0x80000000 );
-
-        }
-        */
+        //
+        //     console.log(intersects[i]);
+        //     //intersects[ i ].object.material.color.set( 0xff0000 );
+        //     // selected = intersects[0].object.parent;
+        //
+         //1}
+        // var vectorMouse = new THREE.Vector3( //vector from camera to mouse
+        //         //     -(window.innerWidth/2-e.clientX)*2/window.innerWidth,
+        //         //     (window.innerHeight/2-e.clientY)*2/window.innerHeight,
+        //         //     -1/Math.tan(22.5*Math.PI/180)); //22.5 is half of camera frustum angle 45 degree
+        //         // vectorMouse.applyQuaternion(this.camera.quaternion);
+        //         // vectorMouse.normalize();
+        //         //
+        //         // var vectorObject = new THREE.Vector3(); //vector from camera to object
+        //         // vectorObject.set(this.copter.x - this.camera.position.x,
+        //         //     this.copter.y - this.camera.position.y,
+        //         //     this.copter.z - this.camera.position.z);
+        //         // vectorObject.normalize();
+        //         // if (vectorMouse.angleTo(vectorObject)*180/Math.PI < 1) {
+        //         //     //mouse's position is near object's position
+        //         //
+        //         // }
     }
 
     onMouseMove( event ) {
 
         // calculate mouse position in normalized device coordinates
         // (-1 to +1) for both components
-
-        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        // this.mouse.x = ( event.pageX / window.innerWidth ) * 2 - 1;
+        // this.mouse.y = - ( event.pageY / window.innerHeight ) * 2 + 1;
         //console.log(mouse.x);
         //console.log(mouse.y);
+        this.mouse.x = ( event.offsetX / this.renderer.domElement.width ) * 2 - 1;
+        this.mouse.y = -( event.offsetY / this.renderer.domElement.height ) * 2 + 1;
+
+        // var deltaX = event.clientX - mouseX;
+        // var deltaY = event.clientY - mouseY;
     }
 }

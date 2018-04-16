@@ -6,8 +6,9 @@ export default class Wall {
 
         const wallMesh = new THREE.Mesh(
             new THREE.PlaneGeometry(500,500,10,10),
-            new THREE.MeshBasicMaterial({map:texture}));
+            new THREE.MeshPhongMaterial({map:texture}));
         wallMesh.matrixAutoUpdate = false;
+        wallMesh.receiveShadow = true;
 
 
         return wallMesh;   // the constructor must return the entire group

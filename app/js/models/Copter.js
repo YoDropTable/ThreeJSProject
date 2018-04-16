@@ -6,7 +6,6 @@ class Copter extends Group {
 
     constructor() {
         super();
-        this.castShadow = true;
         this.myPosition = 0;
         this.swayLeft = false;
         //Body Color
@@ -42,37 +41,6 @@ class Copter extends Group {
         const tailMesh = new Mesh(tailGeo,material);
         tailMesh.matrixAutoUpdate = false;
 
-        /*const legGeo = new CylinderGeometry(5,5,20,20);
-        const legMeshOne = new Mesh(legGeo,bodyColorMaterial);
-        legMeshOne.matrixAutoUpdate = false;
-        const legMeshTwo = new Mesh(legGeo, bodyColorMaterial);
-        legMeshOne.matrixAutoUpdate = false;
-        const legMeshThree = new Mesh(legGeo, bodyColorMaterial);
-        legMeshOne.matrixAutoUpdate = false;
-        const legMeshFour = new Mesh(legGeo, bodyColorMaterial);
-        legMeshOne.matrixAutoUpdate = false;
-        let rotation = new THREE.Matrix4().makeRotationX(Math.degToRad(45));
-        let transOne = new THREE.Matrix4().makeTranslation(20, 0, 0);
-        let transTwo = new THREE.Matrix4().makeTranslation(-10, 0, 0);
-        legMeshOne.matrix.multiply(transOne);
-        legMeshOne.matrix.multiply(rotation);
-        legMeshOne.matrix.multiply(transTwo);
-        legMeshTwo.matrix.multiply(transOne);
-        legMeshTwo.matrix.multiply(rotation);
-        legMeshTwo.matrix.multiply(transTwo);
-        legMeshThree.matrix.multiply(transOne);
-        legMeshThree.matrix.multiply(rotation);
-        legMeshThree.matrix.multiply(transTwo);
-        legMeshFour.matrix.multiply(transOne);
-        legMeshFour.matrix.multiply(rotation);
-        legMeshFour.matrix.multiply(transTwo);
-
-        this.add(legMeshOne);
-        this.add(legMeshTwo);
-        this.add(legMeshThree);
-        this.add(legMeshFour);*/
-
-
         let rot = new THREE.Matrix4().makeRotationZ(Math.degToRad(90));
         bodyMesh.matrixAutoUpdate = false;
         let trans = new THREE.Matrix4().makeTranslation(75, 0, 0);
@@ -81,7 +49,6 @@ class Copter extends Group {
         tailMesh.matrix.multiply(rot);
         rot = new THREE.Matrix4().makeRotationY(Math.degToRad(270));
         bodyMesh.matrix.multiply(rot);
-
 
         this.body.add(bodyMesh);
         this.body.add(tailMesh);

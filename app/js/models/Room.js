@@ -6,6 +6,9 @@ class Room extends Group {
     constructor() {
         super();
         var brickTex = new THREE.TextureLoader().load('app/js/textures/brick.jpg');
+        // brickTex.wrapS = THREE.RepeatWrapping;
+        // brickTex.wrapT = THREE.RepeatWrapping;
+        // brickTex.repeat.set(4,4);
         var marioTex = new THREE.TextureLoader().load('app/js/textures/mario.jpg');
         const wallE = new Wall(marioTex);
         const wallW = new Wall(marioTex);

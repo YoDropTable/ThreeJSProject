@@ -6,6 +6,7 @@ import {
     Group,
     SphereGeometry, Math
 } from 'three';
+import * as THREE from "three";
 
 /*********************************************
  * A model of The Enterprise ship from Star Trek.
@@ -13,12 +14,14 @@ import {
  * @version 4/2/2018
  *********************************************/
 
-export default class ThreeJSEnterprise {
+class ThreeJSEnterprise extends Group{
     constructor () {
+        super();
+        this.enterpriseGroup = new Group();
         const bodyColorMaterial = new MeshPhongMaterial ({color: 0x808080});
 
         //main group for entire model
-        const enterpriseGroup = new Group();
+        // const enterpriseGroup = new Group();
 
         //body group
         const bodyGroup = new Group();
@@ -94,7 +97,7 @@ export default class ThreeJSEnterprise {
                     engineGroup.translateZ(1.8);
                     break;
             }
-            enterpriseGroup.add(engineGroup);
+            this.enterpriseGroup.add(engineGroup);
         }
 
         //connect ship head to body
@@ -104,7 +107,7 @@ export default class ThreeJSEnterprise {
         connector.translateY(2.0);
         connector.rotateX(Math.degToRad(-45));
         connector.translateZ(-1);
-        enterpriseGroup.add(connector);
+        this.enterpriseGroup.add(connector);
 
         //build ship head
         const shipHeadGroup = new Group();
@@ -124,20 +127,52 @@ export default class ThreeJSEnterprise {
         innerTop.rotateX(Math.degToRad(180));
         innerTop.translateY(0.5);
         shipHeadGroup.add(innerTop);
-        enterpriseGroup.add(shipHeadGroup);
+        this.enterpriseGroup.add(shipHeadGroup);
         //move head to proper position
         shipHeadGroup.translateY(-1.4);
         shipHeadGroup.translateZ(-1.5);
-
+        this.enterpriseGroup.matrixAutoUpdate = false;
         //add subgroups to enterpriseGroup
-        enterpriseGroup.add(bodyGroup);
+        this.enterpriseGroup.add(bodyGroup);
         //make object larger to return just cuz
-        enterpriseGroup.scale.set(15,15,15);
+        this.scale.set(15,15,15);
         //make view presentable
-        enterpriseGroup.rotateZ(Math.degToRad(180));
-        enterpriseGroup.rotateY(Math.degToRad(-90));
-        enterpriseGroup.rotateZ(Math.degToRad(20));
+        this.rotateZ(Math.degToRad(180));
+        this.rotateY(Math.degToRad(-90));
+        this.rotateZ(Math.degToRad(20));
 
-        return enterpriseGroup;   // the constructor must return the entire group
+
+        this.add(this.enterpriseGroup);
+       // return enterpriseGroup;   // the constructor must return the entire group
+    }
+    move(z){
+        const move = new THREE.Matrix4().makeTranslation(0,0,z/15);
+        this.enterpriseGroup.matrix.multiply(move);
+    }
+
+    strafe(x){
+        const strafe = new THREE.Matrix4().makeTranslation(x/15,0,0);
+        this.enterpriseGroup.matrix.multiply(strafe);
+    }
+
+    climb(y){
+        const climb = new THREE.Matrix4().makeTranslation(0,y/15,0);
+        this.enterpriseGroup.matrix.multiply(climb);
+    }
+
+    turn(angle){
+        const turn = new THREE.Matrix4().makeRotationY(Math.degToRad(angle));
+        this.enterpriseGroup.matrix.multiply(turn);
+    }
+
+    roll(angle){
+        const roll = new THREE.Matrix4().makeRotationZ(Math.degToRad(angle));
+        this.enterpriseGroup.matrix.multiply(roll);
+    }
+
+    pitch(angle){
+        const pitch = new THREE.Matrix4().makeRotationX(Math.degToRad(angle));
+        this.enterpriseGroup.matrix.multiply(pitch);
     }
 }
+export default ThreeJSEnterprise;
