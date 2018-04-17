@@ -37,12 +37,11 @@ class Room extends Group {
         this.add(floor);
         const skyMesh = new THREE.Mesh(
             new THREE.PlaneGeometry(500,500,10,10),
-            new THREE.MeshBasicMaterial({color: 0x7EC0EE}));
+            new THREE.MeshPhongMaterial({color: 0x7EC0EE}));
         skyMesh.matrixAutoUpdate = false;
         skyMesh.matrix.multiply(new THREE.Matrix4().makeTranslation(0,250,0));
         skyMesh.matrix.multiply(new THREE.Matrix4().makeRotationX(Math.degToRad(90)));
         this.add(skyMesh);
-
     }
 }
 

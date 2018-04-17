@@ -12,7 +12,7 @@ class Copter extends Group {
         const bodyColorMaterial = new MeshPhongMaterial ({color: 0x808080});
         var texture = new THREE.TextureLoader().load('app/js/textures/copter2.jpg');
         var texture2 = new THREE.TextureLoader().load('app/js/textures/tail.jpg');
-        var material = new THREE.MeshBasicMaterial({map:texture});
+        var material = new THREE.MeshPhongMaterial({map:texture});
         //Create Blades
         this.blades = new Blades(150, 5);
         this.bladesBack = new Blades(25, 2);
@@ -37,7 +37,7 @@ class Copter extends Group {
         const tailGeo = new CylinderGeometry(10,10,150,20);
         this.body = new Group();
         const bodyMesh = new Mesh(cockpitGeo,material);
-        material = new THREE.MeshBasicMaterial({map:texture2});
+        material = new THREE.MeshPhongMaterial({map:texture2});
         const tailMesh = new Mesh(tailGeo,material);
         tailMesh.matrixAutoUpdate = false;
 
@@ -97,10 +97,6 @@ class Copter extends Group {
             this.myPosition = this.myPosition - .1;
             if(this.myPosition < 0){
                 this.swayLeft = true;
-                //let rotTurn = new THREE.Matrix4().makeRotationX(Math.degToRad(-15));
-                //let rotTurnWOrld = new THREE.Matrix4().makeRotationX(Math.degToRad(15));
-                //this.body.matrix.multiply(rotTurn)
-                //this.body.matrixWorld.multiply(rotTurnWOrld);
             }
             let translate = new THREE.Matrix4().makeTranslation(0,0,-trans);
             this.body.matrix.multiply(translate);
@@ -109,11 +105,6 @@ class Copter extends Group {
 
 
     }
-
-    // turn(angle) {
-    //     const rot = new THREE.Matrix4().makeTranslation(0,0,-1);
-    //     this.frame.matrix.multiply(rot);
-    // }
 
     move(x){
         const move = new THREE.Matrix4().makeTranslation(x,0,0);

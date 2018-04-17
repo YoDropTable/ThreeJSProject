@@ -13,6 +13,7 @@ import Room from "./models/Room";
 import {SphereGeometry} from "three";
 import {MeshStandardMaterial} from "three";
 import {Mesh} from "three";
+import {MeshPhongMaterial} from "three";
 var selected;
 var rotationSpeed = 20;
 var swayDistance = 1;
@@ -21,6 +22,16 @@ var copterSway = swayDistance;
 var canvas;
 var w = 3;
 var h = 4;
+
+var ambientIntensity = 0.1;
+
+var lightOneIntensity = 1;
+
+var spotLightIntensity = 1;
+var spotLightAngle = Math.PI/8;
+var spotLightDecay = 0;
+var spotLightDistance = 500;
+var spotLightPenumbra = 0.4;
 
 //select items with mouse vars
 ///////////
@@ -40,12 +51,16 @@ const pitchCamDown = new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-10))
 export default class App {
   constructor() {
     const c = document.getElementById('mycanvas');
-      window.addEventListener('keydown', this.onKeypress.bind(this), false);
-      window.addEventListener('mousemove', this.onMouseMove.bind(this), false);
-    // Enable antialias for smoother lines
+      // window.addEventListener('keydown', this.onKeypress.bind(this), false);
+      // window.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+    //window.addEventListener('toggleAmbient', this.toggleAmbient.bind(this), false);
+      // Enable antialias for smoother lines
     this.renderer = new THREE.WebGLRenderer({canvas: c, antialias: true});
     this.renderer.shadowMap.enabled = true;
+
       this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    //   this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
      // this.renderer.setPixelRatio( window.devicePixelRatio );
       //container.appendChild(this.renderer.domElement);
       //renderer.setPixelRatio( window.devicePixelRatio );
@@ -59,76 +74,96 @@ export default class App {
       this.raycaster = new THREE.Raycaster();
       this.mouse = new THREE.Vector2();
 
-      window.addEventListener( 'mousedown', this.onDocumentMouseDown.bind(this), false );
-      window.addEventListener( 'touchstart', this.onDocumentTouchStart.bind(this), false );
+      // window.addEventListener( 'mousedown', this.onDocumentMouseDown.bind(this), false );
+      // window.addEventListener( 'touchstart', this.onDocumentTouchStart.bind(this), false );
 
-      const lightOne = new THREE.DirectionalLight (0xFFFFFF, 1.0);
-      lightOne.position.set (10, 40, 100);
-      this.scene.add (lightOne);
+      this.lightOne = new THREE.DirectionalLight (0xFFFFFF, lightOneIntensity);
+      this.lightOne.position.set (20, 20, 20);
+      //this.lightOne.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 50, 1, 1200, 2500 ) );
+      this.lightOne.castShadow = true;
+      this.lightOne.shadow.mapSize.width = 512;  // default
+      this.lightOne.shadow.mapSize.height = 512; // default
+      this.lightOne.shadow.camera.near = 0.5;       // default
+      this.lightOne.shadow.camera.far = 500;
+      // var targetObject = new THREE.Object3D();
+      // this.scene.add(targetObject);
+      //
+      // this.lightOne.target = targetObject;
+      //this.scene.add( this.lightOne.target );
+      //this.lightOne.castShadow = true;
+      this.scene.add (this.lightOne);
 
       this.ambient = new THREE.AmbientLight(0xff52ef, 0.1);
       this.scene.add(this.ambient);
+      //this.ambient.castShadow = true;
       this.spotLight = new THREE.SpotLight(0xfFFFFF, 1);
       //var spotLightHelper = new THREE.SpotLightHelper( this.spotLight );
+      this.spotLight.shadow.mapSize.width = 512;  // default
+      this.spotLight.shadow.mapSize.height = 512; // default
+      this.spotLight.shadow.camera.near = 0.5;       // default
+      this.spotLight.shadow.camera.far = 500;
 
       this.spotLight.position.set(-40,80,40);
-      this.spotLight.angle = Math.PI / 8;
+      this.spotLight.angle = spotLightAngle;
       this.spotLight.penumbra = 0.4;
-      this.spotLight.decay = .5;
-      this.spotLight.distance = 500;
+      this.spotLight.decay = 0;
+      this.spotLight.distance = 100;
       this.spotLight.castShadow = true;
+      this.spotLight.target = this.scene;
       //this.scene.add(this.spotLight.target);
 
-      const Sphere = new SphereGeometry(50, 20, 20);
-      const SphereColor = new MeshStandardMaterial ({color: 0xBBBBBB});
-      this.sphereMesh = new Mesh(Sphere, SphereColor);
-
-      this.sphereMesh.receiveShadow = true;
-      this.sphereMesh.matrixAutoUpdate = false;
-      this.sphereMesh.matrix.multiply(new THREE.Matrix4().makeTranslation(0,-100,20));
-        this.scene.add(this.sphereMesh);
         this.scene.add(this.spotLight);
 
-        //this.scene.add(this.spotLight.target);
-        //this.spotLight.target = this.myEnterpise;
-      // this.scene.add( spotLightHelper );
-      // const orbiter = new OrbitControls(this.camera);
-    // orbiter.enableZoom = false;
-    // orbiter.update();
-    // this.tracker = new TrackballControls(this.camera);
-    // this.tracker.rotateSpeed = 2.0;
-    // this.tracker.noZoom = false;
-    // this.tracker.noPan = false;
     var texture = new THREE.TextureLoader().load('app/js/textures/mario.jpg');
     this.wall = new Room();
-    this.wall.receiveShadow = true;
+      this.wall.traverse( function( child )
+      {
+          if( child instanceof THREE.Mesh )
+          {
+              //child.castShadow = true;
+              child.receiveShadow = true;
+          }
+      } );
+
     this.scene.add(this.wall);
     this.copter = new Copter();
-    this.copter.name = 'copter';
-    this.copter.castShadow = true;
+      this.copter.traverse( function( child )
+      {
+          if( child instanceof THREE.Mesh )
+          {
+              //child.castShadow = true;
+              child.receiveShadow = true;
+              child.castShadow = true;
+          }
+      } );
+
+
+    // this.copter.castShadow = true;
     this.scene.add(this.copter);
     //this.scene.add(this.copter);
     this.copter.body.matrix.multiply(new THREE.Matrix4().makeTranslation(300,0,0));
 
-
-
-
+     // this.spotLight.target = this.copter;
     //this.myTie = new tie();
     this.myEnterpise = new ThreeJSEnterprise();
-    this.myEnterpise.castShadow = true;
+    // this.myEnterpise.castShadow = true;
+      this.myEnterpise.traverse( function( child )
+      {
+          if( child instanceof THREE.Mesh)
+          {
+              //child.castShadow = true;
+              child.receiveShadow = true;
+              child.castShadow = true;
+          }
+      } );
 
-
-    //this.uni = new UniCycle();
-    //this.uni.scale.set(new THREE.Vector3());
-    //this.scene.add(this.myTie);
     this.scene.add(this.myEnterpise);
-    //this.scene.add(this.uni);
 
       this.camera.matrixAutoUpdate = false;
       //move camera only by default
       selected = this.camera;
 
-
+    this.setupListeners();
     window.addEventListener('resize', () => this.resizeHandler());
     this.resizeHandler();
     requestAnimationFrame(() => this.render());
@@ -227,7 +262,6 @@ this.strafeRight(selected);
                 break;
             case 51:
                 // '3'- stop blades rotation
-                selected = this.myEnterpise;
                 bladeRotation = 0;
                 break;
             case 52:
@@ -246,7 +280,7 @@ this.strafeRight(selected);
                 // '7'- increase blade speed
                 if(rotationSpeed < 120)
                 rotationSpeed++;
-                console.log(rotationSpeed);
+                //console.log(rotationSpeed);
                 bladeRotation = rotationSpeed;
                 break;
             case 56:
@@ -261,7 +295,7 @@ this.strafeRight(selected);
     moveForward(selected){
       if(selected == this.copter){
 
-          console.log("Thisis happening");
+          //console.log("Thisis happening");
           //move forward
           this.copter.move(-10);
 
@@ -434,21 +468,23 @@ this.strafeRight(selected);
     }
 
     onDocumentMouseDown(e) {
+      //my laptop was being stupid
+      console.log("click");
         this.raycaster.setFromCamera(this.mouse, this.camera);
         var intersects = this.raycaster.intersectObjects(this.scene.children, true);
          for ( var i = 0; i < intersects.length; i++ ) {
-             console.log(intersects[i]);
+           //  console.log(intersects[i].object.parent);
              //console.log(intersects[i].object.parent.parent);
              if(intersects[i].object.parent === this.copter || intersects[i].object.parent.parent === this.copter){
                  selected = this.copter;
                  i = intersects.length
-             }else if(intersects[i].object.parent === this.myEnterpise || intersects[i].object.parent.parent.parent === this.myEnterpise){
-                 selected = this.myEnterpise;
-                 i = intersects.length
-             }else if(intersects[i].object === this.sphereMesh) {
-                 selected = this.sphereMesh;
-                 i = intersects.length
-             } else {
+             }else if(intersects[i].object.parent.parent != null && intersects[i].object.parent.parent.parent != null){
+                 if(intersects[i].object.parent.parent === this.myEnterpise || intersects[i].object.parent.parent.parent === this.myEnterpise) {
+                     selected = this.myEnterpise;
+                     i = intersects.length
+                 }
+             }
+              else {
                  selected = this.camera;
                  i = intersects.length
              }
@@ -498,4 +534,132 @@ this.strafeRight(selected);
         // var deltaX = event.clientX - mouseX;
         // var deltaY = event.clientY - mouseY;
     }
+
+    adjustBladeSpeed(i){
+      bladeRotation = i;
+    }
+
+    adjustSway(i){
+      copterSway = i;
+    }
+
+    adjustAmbientIntensity(i){
+      if(i != 0)
+      this.ambient.intensity = ambientIntensity = i;
+    }
+
+    adjustLightOneIntensity(i){
+     // lightOneIntensity = i;
+        this.lightOne.intensity = lightOneIntensity = i;
+    }
+
+    adjustSpotlightIntensity(i){
+        // lightOneIntensity = i;
+        this.spotLight.intensity = spotLightIntensity = i;
+    }
+
+    adjustSpotlightDecay(i){
+        //spotLightIntensity = i;
+        this.spotLight.decay = spotLightDecay = i;
+    }
+
+    adjustSpotlightAngle(i){
+        //spotLightIntensity = i;
+        this.spotLight.angle = spotLightAngle = i;
+    }
+
+    adjustSpotlightDistance(i){
+        //spotLightIntensity = i;
+        this.spotLight.distance = spotLightDistance = i;
+    }
+
+    adjustSpotlightPenumbra(i){
+        //spotLightIntensity = i;
+        this.spotLight.penumbra = spotLightPenumbra = i;
+    }
+
+    sliderChanged(i){
+      switch(i.detail.id){
+          case "bladeSpeed":
+              this.adjustBladeSpeed(i.detail.val);
+              break;
+          case "swayDist":
+              this.adjustSway(i.detail.val);
+              break;
+          case "ambientLightIntensity":
+              this.adjustAmbientIntensity(i.detail.val);
+              break;
+          case "lightOneIntensity":
+              this.adjustLightOneIntensity(i.detail.val);
+              break;
+          case "lightOneX":
+              this.lightOne.position.x = i.detail.val;
+              break;
+          case "lightOneY":
+              this.lightOne.position.y = i.detail.val;
+              break;
+          case "lightOneZ":
+              this.lightOne.position.z = i.detail.val;
+              break;
+          case "spotLightX":
+              this.spotLight.position.x = i.detail.val;
+              break;
+          case "spotLightY":
+              this.spotLight.position.y = i.detail.val;
+              break;
+          case "spotLightZ":
+              this.spotLight.position.z = i.detail.val;
+              break;
+          case "spotLightIntensity":
+              this.adjustSpotlightIntensity(i.detail.val);
+              break;
+          case "spotLightPenumbra":
+              this.adjustSpotlightPenumbra(i.detail.val);
+              break;
+          case "spotLightDecay":
+              this.adjustSpotlightDecay(i.detail.val);
+              break;
+          case "spotLightDistance":
+              this.adjustSpotlightDistance(i.detail.val);
+              break;
+          case "spotLightAngle":
+              this.adjustSpotlightAngle(i.detail.val);
+              break;
+      }
+
+    }
+
+    toggle(i){
+      switch(i.detail.id){
+          case "ambientOff":
+              this.ambient.intensity = 0;
+              break;
+          case "ambientOn":
+              this.ambient.intensity = ambientIntensity;
+              break;
+          case "lightOneOff":
+              this.lightOne.intensity = 0;
+              break;
+          case "lightOneOn":
+              this.lightOne.intensity = lightOneIntensity;
+              break;
+          case "spotlightOff":
+              this.spotLight.intensity = 0;
+              break;
+          case "spotlightOn":
+              this.spotLight.intensity = spotLightIntensity;
+              break;
+      }
+    }
+
+    setupListeners(){
+        window.addEventListener('keydown', this.onKeypress.bind(this), false);
+        window.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+        window.addEventListener( 'mousedown', this.onDocumentMouseDown.bind(this), false);
+        window.addEventListener('light_toggled', this.toggle.bind(this), false);
+        window.addEventListener('values_changed', this.sliderChanged.bind(this), false);
+
+    }
+
+
 }
