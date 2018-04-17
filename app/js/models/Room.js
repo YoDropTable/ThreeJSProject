@@ -1,15 +1,17 @@
 import {CylinderGeometry, Group, Math, Matrix4, Mesh, MeshPhongMaterial, SphereGeometry} from "three";
 import * as THREE from "three";
 import Wall from "./wall";
+import brick from "../textures/Brick.jpg";
+import mario from "../textures/mario.jpg";
 
 class Room extends Group {
     constructor() {
         super();
-        var brickTex = new THREE.TextureLoader().load('app/js/textures/brick.jpg');
+        var brickTex = new THREE.TextureLoader().load(brick);
         // brickTex.wrapS = THREE.RepeatWrapping;
         // brickTex.wrapT = THREE.RepeatWrapping;
         // brickTex.repeat.set(4,4);
-        var marioTex = new THREE.TextureLoader().load('app/js/textures/mario.jpg');
+        var marioTex = new THREE.TextureLoader().load(mario);
         const wallE = new Wall(marioTex);
         const wallW = new Wall(marioTex);
         const wallN = new Wall(marioTex);

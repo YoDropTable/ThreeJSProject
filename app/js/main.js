@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import Copter from './models/Copter'
 import tie from './models/tie';
 import ThreeJSEnterprise from './models/ThreeJSEnterprise'
+import mario from "./textures/mario.jpg";
 import UniCycle from './models/UniCycle'
 // import orbit from 'three-orbit-controls';
 // const OrbitControls = orbit(THREE);
@@ -109,12 +110,13 @@ export default class App {
       this.spotLight.decay = 0;
       this.spotLight.distance = 100;
       this.spotLight.castShadow = true;
-      this.spotLight.target = this.scene;
+
+      //this.spotLight.target.position.set(0,0,0);
       //this.scene.add(this.spotLight.target);
 
         this.scene.add(this.spotLight);
 
-    var texture = new THREE.TextureLoader().load('app/js/textures/mario.jpg');
+    var texture = new THREE.TextureLoader().load(mario);
     this.wall = new Room();
       this.wall.traverse( function( child )
       {
@@ -173,8 +175,9 @@ export default class App {
       this.raycaster.setFromCamera( this.mouse, this.camera );
     this.renderer.render(this.scene, this.camera);
       this.copter.animate(bladeRotation, copterSway);
-
     requestAnimationFrame(() => this.render());
+    //this.spotLight.position.set(this.copter.myPosition);
+
 
   }
 
@@ -200,6 +203,7 @@ export default class App {
             case 65:
                 // 'a'
                 this.strafeLeft(selected);
+                console.log(this.copter);
 
                 break;
             case 87:
@@ -473,14 +477,14 @@ this.strafeRight(selected);
         this.raycaster.setFromCamera(this.mouse, this.camera);
         var intersects = this.raycaster.intersectObjects(this.scene.children, true);
          for ( var i = 0; i < intersects.length; i++ ) {
-           //  console.log(intersects[i].object.parent);
-             //console.log(intersects[i].object.parent.parent);
              if(intersects[i].object.parent === this.copter || intersects[i].object.parent.parent === this.copter){
                  selected = this.copter;
+                 this.spotLight.target = this.copter.body;
                  i = intersects.length
              }else if(intersects[i].object.parent.parent != null && intersects[i].object.parent.parent.parent != null){
                  if(intersects[i].object.parent.parent === this.myEnterpise || intersects[i].object.parent.parent.parent === this.myEnterpise) {
                      selected = this.myEnterpise;
+                     this.spotLight.target = this.myEnterpise.enterpriseGroup;
                      i = intersects.length
                  }
              }

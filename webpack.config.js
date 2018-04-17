@@ -7,7 +7,7 @@ var ENTRY_PATH    = path.resolve(ROOT_PATH, 'app/js/index.js');
 //var SRC_PATH      = path.resolve(ROOT_PATH, 'app');
 var JS_PATH       = path.resolve(ROOT_PATH, 'app/js');
 var TEMPLATE_PATH = path.resolve(ROOT_PATH, 'app/index.html');
-// var SHADER_PATH   = path.resolve(ROOT_PATH, 'src/shaders');
+ var TEX_PATH   = path.resolve(ROOT_PATH, 'app/js/textures');
 var BUILD_PATH    = path.resolve(ROOT_PATH, 'dist');
 
 // set debug to true if we are not in production environment
@@ -42,6 +42,11 @@ module.exports = {
           cacheDirectory: true
         }
       },
+        {
+            test: /\.(jpg|png|jpeg|gif)$/,
+            include: TEX_PATH,
+            loader: 'file-loader'
+        }
       // {
       //   test: /\.glsl$/,
       //   include: SHADER_PATH,
